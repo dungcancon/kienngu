@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Password</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Pacifico&display=swap');
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(to bottom, #ffdde1, #ffbfd7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out, opacity 1s ease-out;
+        }
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+        }
+        .input-container {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        input {
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            font-size: 20px;
+            border: 2px solid #ff69b4;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #ff69b4;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #message {
+            margin-top: 10px;
+            font-size: 18px;
+            color: red;
+        }
+        .flower {
+            position: absolute;
+            font-size: 24px;
+            top: -50px;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-50px) translateX(0px) rotate(0deg); }
+            100% { transform: translateY(100vh) translateX(30px) rotate(360deg); }
+        }
+        .center-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            font-weight: bold;
+            color: #ff1493;
+            text-align: center;
+            width: 80%;
+            line-height: 1.5;
+            font-family: 'Dancing Script', cursive;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        .highlight {
+            font-size: 40px;
+            color: #e60073;
+            font-weight: bold;
+            font-family: 'Pacifico', cursive;
+        }
+        .hide {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="loginContainer">
+        <h2>Enter Secret Password</h2>
+        <div class="input-container" id="inputContainer"></div>
+        <button onclick="checkPassword()">Submit</button>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        // Mật khẩu troll Phạm Trung Kiên
+        const correctPassword = "Pham Trung Kien".replace(/\s/g, "").toUpperCase();
+        const inputContainer = document.getElementById("inputContainer");
+        const loginContainer = document.getElementById("loginContainer");
+        const messages = [
+            "Ối giời, nhập sai rồi Kiên ơi! 😆",
+            "Tưởng thông minh lắm à? 😜",
+            "Không đúng đâu ông cháu! 😏",
+            "Kiên ơi, có nhớ mật khẩu không đó? 🤣"
+        ];
+
+        // Tạo đúng số ô nhập mật khẩu
+        for (let i = 0; i < correctPassword.length; i++) {
+            let input = document.createElement("input");
+            input.type = "text";
+            input.maxLength = 1;
+            input.dataset.index = i;
+            input.addEventListener("input", (e) => moveNext(e, i));
+            inputContainer.appendChild(input);
+        }
+
+        function moveNext(e, index) {
+            if (e.inputType !== "deleteContentBackward") {
+                let next = document.querySelector(`input[data-index='${index + 1}']`);
+                if (next) next.focus();
+            }
+        }
+
+        function checkPassword() {
+            let userInput = "";
+            document.querySelectorAll("input").forEach(input => userInput += input.value.toUpperCase());
+
+            if (userInput === correctPassword) {
+                loginContainer.classList.add("hide");
+                setTimeout(() => {
+                    document.body.innerHTML = `
+                        <div class="center-message">
+                            <div class="highlight">Chúc Mừng Phạm Trung Kiên</div>
+                            Ông bạn tôi đây rồi! 😂<br>
+                            Chúc bạn luôn vui vẻ và bớt troll người khác nhé! 🎉
+                        </div>
+                    `;
+                    startFlowerEffect(); // 🌸 Hiệu ứng hoa rơi ngay khi hiện lời chúc
+                }, 500);
+            } else {
+                loginContainer.classList.add("shake");
+                document.getElementById("message").textContent = messages[Math.floor(Math.random() * messages.length)];
+                let inputs = document.querySelectorAll("input");
+                inputs.forEach(input => input.value = ""); // Xóa nội dung nhập sai
+                inputs[0].focus();
+                setTimeout(() => loginContainer.classList.remove("shake"), 500);
+            }
+        }
+
+        function startFlowerEffect() {
+            setInterval(() => {
+                const flower = document.createElement("div");
+                flower.classList.add("flower");
+                flower.innerHTML = "🌸";
+                flower.style.left = Math.random() * window.innerWidth + "px";
+                flower.style.animationDuration = (Math.random() * 6 + 4) + "s";
+                flower.style.animationTimingFunction = "ease-in-out";
+                document.body.appendChild(flower);
+                setTimeout(() => flower.remove(), 9000);
+            }, 400); // 🌸 Hoa xuất hiện nhanh hơn
+        }
+
+        // 🛑 Chặn F12, Ctrl+Shift+I, Ctrl+U, và chuột phải
+        document.addEventListener("contextmenu", (event) => event.preventDefault()); // Chặn chuột phải
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "F12" || 
+                (event.ctrlKey && event.shiftKey && event.key === "I") || 
+                (event.ctrlKey && event.key === "U")) {
+                event.preventDefault();
+                alert("Không được tò mò đâu nha Kiên! 🤣");
+            }
+        });
+    </script>
+</body>
+</html>
